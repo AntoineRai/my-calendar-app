@@ -6,12 +6,21 @@ const TaskForm = ({ addTask }) => {
   const [eventDate, setEventDate] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
+  const notify = () => {
+    Notification.requestPermission().then(function (result) {
+      new Notification('Tache ajouté', {
+        body: 'La tache ' + eventName + ' a été ajouté avec succès pour la date : ' + eventDate + ' !',
+      })
+    })
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (eventName.trim() !== '' && eventDate.trim() !== '') {
       addTask(eventName, eventDate);
       setEventName('');
       setEventDate('');
+      setIsFormValid(false);
     }
   };
 
@@ -44,7 +53,7 @@ const TaskForm = ({ addTask }) => {
           value={eventDate}
           onChange={handleEventDateChange}
         />
-        <button type="submit" disabled={!isFormValid}>
+        <button type="submit" disabled={!isFormValid} onClick={notify}>
           Ajouter
         </button>
       </form>

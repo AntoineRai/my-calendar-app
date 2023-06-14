@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification } = require('electron')
+const { app, BrowserWindow } = require('electron')
 
 const isDev = require('electron-is-dev')
 
@@ -33,14 +33,4 @@ app.on('window-all-closed', function () {
 
 app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
-})
-
-if (isDev) {
-    require('electron-reload')(__dirname, {
-        electron: path.join(__dirname, '../node_modules', '.bin', 'electron')
-    })
-}
-
-ipcMain.on('notify', (_, message) => {
-    new Notification({ title: 'Notifiation', body: message }).show();
 })
