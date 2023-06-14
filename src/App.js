@@ -1,23 +1,35 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import TaskForm from './components/TaskForm/TaskForm';
 import TaskList from './components/TaskList/TaskList';
 
 function App() {
-  const [tasks, setTasks] = useState([
-    { eventName: 'Anniversaire de Pierre', eventDate: '2000-01-11' },
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   const addTask = (eventName, eventDate) => {
     const newTask = { eventName, eventDate };
     setTasks([...tasks, newTask]);
   };
 
+  const editTask = (index, updatedTask) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index] = updatedTask;
+    setTasks(updatedTasks);
+  };
+
+  const deleteTask = (index) => {
+    const updatedTasks = [...tasks];
+    updatedTasks.splice(index, 1);
+    setTasks(updatedTasks);
+  };
+
   return (
     <div className="App">
+      <h1>Todo List</h1>
       <TaskForm addTask={addTask} />
-      <TaskList tasks={tasks} />
+      <div className="TaskListContainer">
+        <TaskList tasks={tasks} editTask={editTask} deleteTask={deleteTask} />
+      </div>
     </div>
   );
 }
