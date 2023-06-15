@@ -9,7 +9,7 @@ const TaskForm = ({ addTask }) => {
   const notify = () => {
     Notification.requestPermission().then(function (result) {
       new Notification('Tache ajouté', {
-        body: 'La tache ' + eventName + ' a été ajouté avec succès pour la date : ' + eventDate + ' !',
+        body: 'La tâche ' + eventName + ' a été ajouté avec succès pour la date : ' + eventDate + ' !',
       })
     })
   }

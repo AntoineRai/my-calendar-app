@@ -18,7 +18,8 @@ function createWindow() {
 
     win.loadURL(
         isDev
-            ? 'http://localhost:3000'
+            ?
+            'http://localhost:3000'
             :
             `file://${path.join(__dirname, '../build/index.html')}`)
 }
@@ -27,6 +28,7 @@ app.on('ready', createWindow)
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') {
+        //TODO: Save tasks to file
         app.quit()
     }
 })
