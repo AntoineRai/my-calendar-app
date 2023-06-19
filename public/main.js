@@ -1,38 +1,69 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain, Notification } = require('electron');
+const Store = require('electron-store');
+const path = require('path');
 
-const isDev = require('electron-is-dev')
+const isDev = require('electron-is-dev');
+require('@electron/remote/main').initialize();
 
-// Enable live reload for Electron too
-require('@electron/remote/main').initialize()
+const schema = {
+  tasks: {
+    type: 'array',
+    default: [],
+    items: {
+      type: 'object',
+      properties: {
+        eventName: { type: 'string' },
+        eventDate: { type: 'string' },
+      },
+    },
+  },
+};
+
+const store = new Store({ schema });
+
+ipcMain.handle('getStoreValue', (event, key) => {
+  return store.get(key);
+});
+
+ipcMain.handle('setStoreValue', (event, key, value) => {
+  store.set(key, value);
+});
+
+ipcMain.handle('showNotification', (event, eventName, eventDate) => {
+  const notification = new Notification({
+    title: 'Tache ajoutée',
+    body: `La tâche ${eventName} pour la date ${eventDate} a été ajoutée !`,
+  });
+
+  notification.show();
+});
 
 function createWindow() {
-    // Create the browser window.
-    const win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true,
-            enableRemoteModule: true,
-        }
-    })
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false,
+    },
+  });
 
-    win.loadURL(
-        isDev
-            ?
-            'http://localhost:3000'
-            :
-            `file://${path.join(__dirname, '../build/index.html')}`)
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`
+  );
 }
 
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') {
-        //TODO: Save tasks to file
-        app.quit()
-    }
-})
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
 
 app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-})
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});

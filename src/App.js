@@ -1,26 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import TaskForm from './components/TaskForm/TaskForm';
 import TaskList from './components/TaskList/TaskList';
 
-function App() {
+const { ipcRenderer } = window.require('electron');
+
+const App = () => {
   const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    ipcRenderer.invoke('getStoreValue', 'tasks').then((result) => {
+      if (result !== undefined && result !== null) {
+        setTasks(result);
+      }
+    });
+  }, []);
 
   const addTask = (eventName, eventDate) => {
     const newTask = { eventName, eventDate };
-    setTasks([...tasks, newTask]);
+    const updatedTasks = [...tasks, newTask];
+    setTasks(updatedTasks);
+    ipcRenderer.invoke('setStoreValue', 'tasks', updatedTasks);
   };
 
   const editTask = (index, updatedTask) => {
     const updatedTasks = [...tasks];
     updatedTasks[index] = updatedTask;
     setTasks(updatedTasks);
+    ipcRenderer.invoke('setStoreValue', 'tasks', updatedTasks);
   };
 
   const deleteTask = (index) => {
     const updatedTasks = [...tasks];
     updatedTasks.splice(index, 1);
     setTasks(updatedTasks);
+    ipcRenderer.invoke('setStoreValue', 'tasks', updatedTasks);
   };
 
   return (
@@ -32,6 +46,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;

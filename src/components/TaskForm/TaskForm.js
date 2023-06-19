@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import './TaskForm.css';
 
+const { ipcRenderer } = window.require('electron');
+
 const TaskForm = ({ addTask }) => {
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
-
-  const notify = () => {
-    Notification.requestPermission().then(function (result) {
-      new Notification('Tache ajouté', {
-        body: 'La tâche ' + eventName + ' a été ajouté avec succès pour la date : ' + eventDate + ' !',
-      })
-    })
-  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,6 +15,7 @@ const TaskForm = ({ addTask }) => {
       setEventName('');
       setEventDate('');
       setIsFormValid(false);
+      showNotification(eventName, eventDate);
     }
   };
 
@@ -38,6 +33,10 @@ const TaskForm = ({ addTask }) => {
     setIsFormValid(eventName.trim() !== '' && eventDate.trim() !== '');
   };
 
+  const showNotification = (eventName, eventDate) => {
+    ipcRenderer.invoke('showNotification', eventName, eventDate);
+  };
+
   return (
     <div className="TaskForm">
       <form onSubmit={handleSubmit}>
@@ -53,7 +52,7 @@ const TaskForm = ({ addTask }) => {
           value={eventDate}
           onChange={handleEventDateChange}
         />
-        <button type="submit" disabled={!isFormValid} onClick={notify}>
+        <button type="submit" disabled={!isFormValid}>
           Ajouter
         </button>
       </form>
