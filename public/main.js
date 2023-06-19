@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, Menu } = require('electron');
 const Store = require('electron-store');
 const path = require('path');
 
@@ -67,3 +67,7 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+
+const menu = Menu.buildFromTemplate([]);
+
+Menu.setApplicationMenu(menu);
